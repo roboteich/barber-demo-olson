@@ -3,13 +3,14 @@
 var path = require('path');
 var extend   = require('util')._extend;
 var fs = require('fs');
+var logger = require('winston');
 
 // load the environment variables
 
 try {
   extend(process.env, require('../.env.js'));
 } catch (err) {
-    console.log(err.code, err);
+    logger.info('[CONFIG] no vars file, using host vars');
 }
 
 // All configurations will extend these options

@@ -24,15 +24,18 @@ var express  = require('express'),
   pkg        = require('./package.json'),
   training   = require('./training/setup'),
   Q          = require('q'),
-  log = console.log.bind(null, '  '),
+  logger     = require('winston'),
   apis = null;
 
 
+
+logger.info('[APP] Starting DB Initialization');
 // connect up db
 db.connect(config.redis.hostname, config.redis.port, {password:config.redis.password});
 
 // initialize all models?
 
+logger.info('[APP] Starting Server Initialization');
 // Bootstrap application settings
 require('./config/express')(app);
 
@@ -45,4 +48,6 @@ require('./controllers')(app);
 
 // error-handler application settings
 require('./middlewears/errors')(app);
+
+logger.info('[APP] Server Initialization Complete');
 module.exports = app;

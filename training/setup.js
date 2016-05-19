@@ -19,7 +19,8 @@
 
 var watson = require('watson-developer-cloud'),
   async    = require('async'),
-  fs       = require('fs');
+  fs       = require('fs'),
+  logger   = require('winston');
 
 var dialogFile = __dirname + '/dialog_id';
 var classifierFile = __dirname + '/classifier_id';
@@ -57,12 +58,12 @@ function trainDialog(callback) {
           callback(err);
         } else {
           fs.writeFileSync(dialogFile, dialog.dialog_id);
-          console.log('[dialog]: dialog trained -- id=', dialog.dialog_id);
+          logger.info('[dialog]: dialog trained -- id=', dialog.dialog_id);
           callback(null);
         }
       });
     } else {
-      console.log('[dialog]: dialog already trained -- id=', data);
+      logger.info('[dialog]: dialog already trained -- id=', data);
       callback(null);
     }
   });
@@ -85,12 +86,12 @@ function trainClassifier(callback) {
           callback(err);
         } else {
           fs.writeFileSync(classifierFile, classifier.classifier_id);
-          console.log('[classifier]: classifier is being trained -- id=', classifier.classifier_id);
+          logger.info('[classifier]: classifier is being trained -- id=', classifier.classifier_id);
           callback(null);
         }
       });
     } else {
-      console.log('[classifier]: classifier already trained -- id=', data);
+      logger.info('[classifier]: classifier already trained -- id=', data);
       callback(null);
     }
   });
@@ -98,7 +99,7 @@ function trainClassifier(callback) {
 
 
 var train = function(cb) {
-  console.log('Training...');
+  logger.info('Training...');
 
   async.parallel([trainDialog, trainClassifier], function (error) {
     if (error)
@@ -112,4 +113,4 @@ module.exports = { train: train };
 
 // if running as an script
 if (require.main === module)
-  train(console.log);
+  train(logger.info);

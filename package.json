@@ -41,7 +41,8 @@
     "q": "^1.4.1",
     "request": "^2.69.0",
     "trim": "0.0.1",
-    "watson-developer-cloud": "^1.2.0"
+    "watson-developer-cloud": "^1.2.0",
+    "winston": "^2.2.0"
   },
   "devDependencies": {
     "del": "^2.2.0",
