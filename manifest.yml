@@ -11,7 +11,7 @@ applications:
 - services:
   - dialog-service
   - classifier-service
-  name: conversational-agent-application-starter-kit
+  name: barber-demo-olson
   command: npm start
   path: .
   memory: 512M

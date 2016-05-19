@@ -25,12 +25,9 @@ module.exports = function (app) {
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
   app.enable('trust proxy');
+  app.set('view engine', 'pug');
 
   // Setup static public directory
   app.use(express.static(__dirname + '/../public'));
-
-  // Only loaded when is running in bluemix
-  if (process.env.VCAP_APPLICATION)
-    require('./security')(app);
 
 };

@@ -18,15 +18,8 @@
 'use strict';
 
 var watson = require('watson-developer-cloud'),
-  extend   = require('util')._extend,
   async    = require('async'),
   fs       = require('fs');
-
-// load the environment variables
-if (fs.existsSync('../.env.js')){
-  console.log('Loading environment variables from .env.js');
-  extend(process.env, require('../.env.js'));
-}
 
 var dialogFile = __dirname + '/dialog_id';
 var classifierFile = __dirname + '/classifier_id';
