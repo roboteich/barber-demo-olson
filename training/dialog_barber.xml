@@ -95,6 +95,32 @@
                           <prompt selectionType="RANDOM">
                             <item>Perfect. {User_Location} is great.</item>
                           </prompt>
+                          <if>
+                            <cond varName="Prefer_Location" operator="EQUAL_TO_NO" />
+                            <output>
+                              <prompt>
+                                <item>Would you like always use this location?</item>
+                              </prompt>
+                              <getUserInput id="capture_pref">
+                                <input>
+                                  <grammar>
+                                    <item>yes</item>
+                                    <item>$ yes</item>
+                                  </grammar>
+                                  <action varName="Prefer_Location" operator="SET_TO_YES" />
+                                  <goto ref="folder_details" />
+                                </input>
+                                <input>
+                                  <grammar>
+                                    <item>no</item>
+                                    <item>$ no</item>
+                                  </grammar>
+                                  <action varName="Prefer_Location" operator="SET_TO_NO" />
+                                  <goto ref="folder_details" />
+                                </input>
+                              </getUserInput>
+                            </output>
+                          </if>
                           <goto ref="folder_details" />
                         </output>
                       </input>
@@ -106,8 +132,30 @@
                 <cond varName="User_Name" operator="HAS_VALUE"/>
                 <output id="confirm_checkin">
                   <prompt selectionType="RANDOM">
-                    <item>Ok {User_Name} you're all checked in {User_Location}</item>
+                    <item>Ok {User_Name} you're all checked in at {User_Location}</item>
                   </prompt>
+                  <if>
+                    <cond varName="Prefer_Location" operator="EQUAL_TO_NO" />
+                    <action varName="User_Location" operator="SET_TO_BLANK" />
+                  </if>
+                  <getUserInput id="await_terminate">
+                    <input>
+                      <grammar>
+                        <item>bye</item>
+                        <item>$ bye</item>
+                        <item>$ thanks</item>
+                        <item>thanks</item>
+                        <item>cool</item>
+                        <item>$ cool</item>
+                        <item>$ awesome</item>
+                      </grammar>
+                      <output>
+                        <prompt>
+                          <item>later!</item>
+                        </prompt>
+                      </output>
+                    </input>
+                  </getUserInput>
                 </output>
               </if>
             </folder>
@@ -136,6 +184,7 @@
         <var_folder name="CheckIn">
           <var name="User_Name" type="TEXT" />
           <var name="User_Location" type="TEXT" />
+          <var name="Prefer_Location" type="YESNO" value="no"/>
         </var_folder>
     </variables>
     <settings>
