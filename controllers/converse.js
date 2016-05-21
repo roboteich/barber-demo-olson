@@ -53,6 +53,8 @@ function respondWithTwiml(response, message) {
 
 function attachSmsUser(request, response, next){
 
+  logger.info('[CONVERSE] session', request.session);
+
   //if a user is already attached to the request
   if(request.session.account) {
     return next();
