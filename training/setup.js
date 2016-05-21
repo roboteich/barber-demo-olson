@@ -20,7 +20,8 @@
 var watson = require('watson-developer-cloud'),
   async    = require('async'),
   fs       = require('fs'),
-  logger   = require('winston');
+  logger   = require('winston'),
+  config   = require('../config');
 
 var dialogFile = __dirname + '/dialog_id';
 var classifierFile = __dirname + '/classifier_id';
@@ -30,17 +31,17 @@ var classifierTrainingFile = __dirname + '/classifier_training.csv';
 
 var dialogService = watson.dialog({
   url: 'https://gateway.watsonplatform.net/dialog/api',
-  username: 'USERNAME',
-  password: 'PASSWORD',
+  username: config.dialog.username,
+  password: config.dialog.password,
   version: 'v1'
 });
 
-var classifierService = watson.natural_language_classifier({
-  url: 'https://gateway.watsonplatform.net/natural-language-classifier/api',
-  username: 'USERNAME',
-  password: 'PASSWORD',
-  version: 'v1'
-});
+// var classifierService = watson.natural_language_classifier({
+//   url: 'https://gateway.watsonplatform.net/natural-language-classifier/api',
+//   username: config.classifier.username,
+//   password: config.classifier.password,
+//   version: 'v1'
+// });
 
 /**
  * Trains a dialog if the content of /training/dialog_id is null or empty
@@ -79,7 +80,7 @@ function trainClassifier(callback) {
     else if (data === '') {
       classifierService.create({
         language: 'en',
-        name: 'movies-' + new Date().valueOf(),
+        name: 'barber-' + new Date().valueOf(),
         training_data: fs.createReadStream(classifierTrainingFile)
       }, function(err, classifier) {
         if (err) {
@@ -101,7 +102,7 @@ function trainClassifier(callback) {
 var train = function(cb) {
   logger.info('Training...');
 
-  async.parallel([trainDialog, trainClassifier], function (error) {
+  async.parallel([trainDialog/*, trainClassifier*/], function (error) {
     if (error)
       cb(error);
     else

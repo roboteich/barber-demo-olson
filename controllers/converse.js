@@ -1,6 +1,55 @@
 var express = require('express');
 var app = module.exports = express();
 var Account = require('../models/account');
+var training = require('../training/setup');
+var Q = require('q');
+var logger = require('winston');
+
+//-------------------------------------------------------------
+// Service Setup
+//-------------------------------------------------------------
+
+// promises
+var converse, updateProfile, getIntent, searchLocations = null;
+
+// train the service and create the promises with the result
+training.train(function(err) {
+	if (err){
+    logger.info('[CONVERSE] TRAINING ERROR:', err.error);
+  }
+
+  apis = require('../services/watson');
+
+  converse = Q.nfbind(apis.dialog.conversation.bind(apis.dialog));
+  updateProfile = Q.nfbind(apis.dialog.updateProfile.bind(apis.dialog));
+
+  // getIntent = Q.nfbind(apis.classifier.classify.bind(apis.classifier));
+  // searchMovies = Q.nfbind(apis.movieDB.searchMovies.bind(apis.movieDB));
+});
+//
+// // create the conversation
+// app.post('/api/create_conversation', function(req, res, next) {
+//   converse(req.body)
+//   .then(function(result){
+//     res.json(result[0]);
+//   })
+//   .catch(next);
+// });
+
+//-------------------------------------------------------------
+// Helpers
+//-------------------------------------------------------------
+
+function respondWithTwiml(response, message) {
+  response.type('text/xml');
+  response.render('twiml', {
+    message: message
+  });
+}
+
+//-------------------------------------------------------------
+//  Middlewear
+//-------------------------------------------------------------
 
 function attachSmsUser(request, response, next){
 
@@ -41,54 +90,62 @@ function attachSmsUser(request, response, next){
 }
 
 // Twilio SMS webhook route
-app.post('/sms', attachSmsUser, function(request, response){
+app.post('/sms', attachSmsUser, function(request, response, next){
 
   var sess = request.session;
   var phone = request.session.account.phone;
-  var message = 'Sure thing ' + phone;
+  var message = request.body.Body;
 
-  response.type('text/xml');
-  response.render('twiml', {
-    message: message
+  converse(message)
+    .then(function(result) {
+      var conversation = result[0];
+      // if (searchNow(conversation.response.join(' '))) {
+      //   logger.info('[CONVERSE] 4. dialog thinks we have information enough to search for movies');
+      //   var searchParameters = parseSearchParameters(conversation);
+      //   conversation.response = conversation.response.slice(0, 1);
+      //   logger.info('[CONVERSE] 5. searching for movies in themoviedb.com');
+      //   return searchMovies(searchParameters)
+      //   .then(function(searchResult) {
+      //     logger.info('[CONVERSE] 6. updating the dialog profile with the result from themoviedb.com');
+      //     var profile = {
+      //       client_id: req.body.client_id,
+      //       name_values: [
+      //         { name:'Current_Index', value: searchResult.curent_index },
+      //         { name:'Total_Pages', value: searchResult.total_pages },
+      //         { name:'Num_Movies', value: searchResult.total_movies }
+      //       ]
+      //     };
+      //     return updateProfile(profile)
+      //     .then(function() {
+      //       logger.info('[CONVERSE] 7. calling dialog.conversation()');
+      //       var params = extend({}, req.body);
+      //       if (['new','repeat'].indexOf(searchParameters.page) !== -1)
+      //         params.input = PROMPT_MOVIES_RETURNED;
+      //       else
+      //         params.input = PROMPT_CURRENT_INDEX;
+      //
+      //       return converse(params)
+      //       .then(function(result) {
+      //         res.json(extend(result[0], searchResult));
+      //       });
+      //     });
+      //   });
+      // } else {
+        logger.info('[CONVERSE] continue the conversation', conversation);
+        respondWithTwiml(response, conversation.response);
+      // }
+    })
+    .catch(next);
   });
 
-});
 
-
-// // promises
-// var converse, updateProfile, getIntent, searchMovies, getMovieInformation = null;
-//
-// // train the service and create the promises with the result
-// training.train(function(err) {
-// 	if (err){
-//     log('ERROR:', err.error);
-//   }
-//
-//   apis = require('./api/services');
-//
-//   converse = Q.nfbind(apis.dialog.conversation.bind(apis.dialog));
-//   updateProfile = Q.nfbind(apis.dialog.updateProfile.bind(apis.dialog));
-//   getIntent = Q.nfbind(apis.classifier.classify.bind(apis.classifier));
-//   searchMovies = Q.nfbind(apis.movieDB.searchMovies.bind(apis.movieDB));
-//   getMovieInformation = Q.nfbind(apis.movieDB.getMovieInformation.bind(apis.movieDB));
-// });
-//
-// // create the conversation
-// app.post('/api/create_conversation', function(req, res, next) {
-//   converse(req.body)
-//   .then(function(result){
-//     res.json(result[0]);
-//   })
-//   .catch(next);
-// });
-//
 // // converse
 // app.post('/api/conversation', function(req, res, next) {
-//   log('--------------------------');
-//   log('1. classifying user intent');
+//   logger.info('[CONVERSE] --------------------------');
+//   logger.info('[CONVERSE] 1. classifying user intent');
 //   getIntent({ text: req.body.input })
 //   .then(function(result) {
-//     log('2. updating the dialog profile with the user intent');
+//     logger.info('[CONVERSE] 2. updating the dialog profile with the user intent');
 //     var classes = result[0].classes;
 //     var profile = {
 //       client_id: req.body.client_id,
@@ -102,21 +159,21 @@ app.post('/sms', attachSmsUser, function(request, response){
 //     return updateProfile(profile);
 //   })
 //   .catch(function(error ){
-//     log('2.', error.description || error);
+//     logger.info('[CONVERSE] 2.', error.description || error);
 //   })
 //   .then(function() {
-//     log('3. calling dialog.conversation()');
+//     logger.info('[CONVERSE] 3. calling dialog.conversation()');
 //     return converse(req.body)
 //     .then(function(result) {
 //       var conversation = result[0];
 //       if (searchNow(conversation.response.join(' '))) {
-//         log('4. dialog thinks we have information enough to search for movies');
+//         logger.info('[CONVERSE] 4. dialog thinks we have information enough to search for movies');
 //         var searchParameters = parseSearchParameters(conversation);
 //         conversation.response = conversation.response.slice(0, 1);
-//         log('5. searching for movies in themoviedb.com');
+//         logger.info('[CONVERSE] 5. searching for movies in themoviedb.com');
 //         return searchMovies(searchParameters)
 //         .then(function(searchResult) {
-//           log('6. updating the dialog profile with the result from themoviedb.com');
+//           logger.info('[CONVERSE] 6. updating the dialog profile with the result from themoviedb.com');
 //           var profile = {
 //             client_id: req.body.client_id,
 //             name_values: [
@@ -127,7 +184,7 @@ app.post('/sms', attachSmsUser, function(request, response){
 //           };
 //           return updateProfile(profile)
 //           .then(function() {
-//             log('7. calling dialog.conversation()');
+//             logger.info('[CONVERSE] 7. calling dialog.conversation()');
 //             var params = extend({}, req.body);
 //             if (['new','repeat'].indexOf(searchParameters.page) !== -1)
 //               params.input = PROMPT_MOVIES_RETURNED;
@@ -141,7 +198,7 @@ app.post('/sms', attachSmsUser, function(request, response){
 //           });
 //         });
 //       } else {
-//         log('4. not enough information to search for movies, continue the conversation');
+//         logger.info('[CONVERSE] 4. not enough information to search for movies, continue the conversation');
 //         res.json(conversation);
 //       }
 //     });

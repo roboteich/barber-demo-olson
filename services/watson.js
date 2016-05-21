@@ -29,9 +29,9 @@ if (fs.existsSync(dialogFile))
   DIALOG_ID = trim(fs.readFileSync(dialogFile, 'utf8'));
 
 // 3. classifier id - see training/setup.js
-var CLASSIFIER_ID = 'TYPE CLASSIFIER ID HERE';
-if (fs.existsSync(classifierFile))
-  CLASSIFIER_ID = trim(fs.readFileSync(classifierFile, 'utf8'));
+// var CLASSIFIER_ID = 'TYPE CLASSIFIER ID HERE';
+// if (fs.existsSync(classifierFile))
+//   CLASSIFIER_ID = trim(fs.readFileSync(classifierFile, 'utf8'));
 
 
 module.exports = {
@@ -41,12 +41,12 @@ module.exports = {
     version: 'v1',
     path: { dialog_id: DIALOG_ID }
   }),
-  dialog_id : DIALOG_ID,
-  classifier: watson.natural_language_classifier({
-    username: '<username>',
-    password: '<password>',
-    version: 'v1',
-    path: { classifier_id: CLASSIFIER_ID }
-  }),
-  classifier_id : CLASSIFIER_ID
+  dialog_id : DIALOG_ID
+  // classifier: watson.natural_language_classifier({
+  //   username: '<username>',
+  //   password: '<password>',
+  //   version: 'v1',
+  //   path: { classifier_id: CLASSIFIER_ID }
+  // }),
+  // classifier_id : CLASSIFIER_ID
 };
