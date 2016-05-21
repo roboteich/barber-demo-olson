@@ -23,7 +23,7 @@ module.exports = {
   // Server IP
   ip: process.env.IP || 'localhost',
 
-  redis: JSON.parse(process.env.VCAP_SERVICES).rediscloud[0]
+  redis: JSON.parse(process.env.VCAP_SERVICES).rediscloud[0].credentials
     || {
       hostname:'127.0.0.1',
       port: '6379'
