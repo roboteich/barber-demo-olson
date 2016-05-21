@@ -29,6 +29,10 @@ module.exports = {
       port: '6379'
   },
 
+  session: {
+    secret: process.env.SESSION_SECRET || 'barber'
+  },
+
   locations: {
     endpoint: 'https://info3.regiscorp.com/salonservices/siteid/1/salons/searchGeo/map/{lat}/{lon}/{r1}/{r2}/true'
   }

@@ -1,11 +1,52 @@
 var express = require('express');
 var app = module.exports = express();
+var Account = require('../models/account');
+
+function attachSmsUser(request, response, next){
+
+  //if a user is already attached to the request
+  if(request.session.account) {
+    return next();
+  }
+
+  var senderPhone = request.body.From;
+  // find account for phone
+  Account.one(senderPhone, function(err, account){
+
+    if(err) return next(err);
+
+    // if there's a matching account set it to the session and move on
+    if(account) {
+
+      request.session.account = account;
+      next();
+
+    // else create a new account
+    } else {
+
+      Account.create(
+        {
+          id:senderPhone,
+          phone:senderPhone
+        },
+        function(err, newAccount) {
+          if(err) return next(err);
+          // set the new account to the session and move on
+          request.session.account = newAccount;
+          next();
+        }
+      );
+    }
+  });
+}
 
 // Twilio SMS webhook route
-app.post('/sms', function(request, response){
+app.post('/sms', attachSmsUser, function(request, response){
 
-  var phone = request.body.From;
+  var sess = request.session;
+  var phone = request.session.account.phone;
   var message = 'Sure thing ' + phone;
+
   response.type('text/xml');
   response.render('twiml', {
     message: message

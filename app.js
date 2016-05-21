@@ -25,6 +25,7 @@ var express  = require('express'),
   training   = require('./training/setup'),
   Q          = require('q'),
   logger     = require('winston'),
+  morgan     = require('morgan'),
   apis = null;
 
 
@@ -42,6 +43,13 @@ require('./config/express')(app);
 // Only loaded when is running in bluemix
 if (process.env.VCAP_APPLICATION)
   require('./middlewears/security')(app);
+
+logger.info('[APP] Adding Session Management');
+// add in session management
+require('./middlewears/session')(app);
+
+// log incoming requests
+app.use(morgan('dev'));
 
 // add in controller routes
 require('./controllers')(app);
