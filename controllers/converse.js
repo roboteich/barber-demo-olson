@@ -94,11 +94,23 @@ app.post('/sms', attachSmsUser, function(request, response, next){
 
   var sess = request.session;
   var phone = request.session.account.phone;
-  var message = request.body.Body;
+  var params = {
+    input: request.body.Body,
+    dialog_id: apis.dialog_id,
+    client_id: sess.client_id,
+    conversation_id: sess.conversation_id
+  }
 
-  converse(message)
+
+  converse(params)
     .then(function(result) {
       var conversation = result[0];
+
+      if(!sess.conversation_id) {
+        sess.conversation_id = conversation.conversation_id;
+        sess.client_id = conversation.client_id;
+      }
+
       // if (searchNow(conversation.response.join(' '))) {
       //   logger.info('[CONVERSE] 4. dialog thinks we have information enough to search for movies');
       //   var searchParameters = parseSearchParameters(conversation);
