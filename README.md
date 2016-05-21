@@ -1,14 +1,7 @@
-# Conversational Agent: Movie Assistant [![Build Status](https://travis-ci.org/watson-developer-cloud/conversational-agent-application-starter-kit.svg?branch=master)](https://travis-ci.org/watson-developer-cloud/conversational-agent-application-starter-kit)
+# Conversational Agent: The Barber
 
-This application is an **Application Starter Kit** (ASK) that is
-designed to get you up and running quickly with a common industry pattern, and to provide information about best practices around Watson services. This application was created to highlight the combination of the [Dialog][dialog] and [Natural Language Classifier][classifier] (NLC) services as a [Conversational Agent](#about-the-conversational-agent-pattern). This application can serve as the basis for your own applications that follow that pattern. Another application that demonstrates this pattern is the [What's in Theaters](http://www.ibm.com/smarterplanet/us/en/ibmwatson/developercloud/gallery.html#whats-in-theaters) application that is available in the Watson Developer Cloud website's [Application Gallery](http://www.ibm.com/smarterplanet/us/en/ibmwatson/developercloud/gallery.html).
-
-Give it a try! Click the button below to fork the repository that contains the source code for this application into IBM DevOps Services, which then deploys your own copy of this application on Bluemix automatically:
-
-[![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/watson-developer-cloud/conversational-agent-application-starter-kit)
-
-You can see a version of this app that is already running by clicking
-[here](https://conversational-agent-application-starter-kit.mybluemix.net/).
+This application is based off the IBM **Application Starter Kit** (ASK)
+designed to get up and running quickly with a common industry pattern, and to provide information about best practices around Watson services. This application was created to highlight the combination of the [Dialog][dialog] and [Natural Language Classifier][classifier] (NLC) services as a [Conversational Agent](#about-the-conversational-agent-pattern). This application can serve as the basis for your own applications that follow that pattern.
 
 **IMPORTANT:**
   1. The application uses mock data for movie suggestions until you provide an API Key for [themoviedb.com](https://www.themoviedb.org/documentation/api) in your application's source code, which you can not do when using the **Deploy to Bluemix** button. See [step 10](#step10) in the [Getting Started](#getting-started) section for information about getting and using an API key in an application that you create and deploy manually.

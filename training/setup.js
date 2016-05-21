@@ -26,7 +26,7 @@ var watson = require('watson-developer-cloud'),
 var dialogFile = __dirname + '/dialog_id';
 var classifierFile = __dirname + '/classifier_id';
 
-var dialogTrainingFile = __dirname + '/dialog_and_classifier.xml';
+var dialogTrainingFile = __dirname + '/dialog_barber.xml';
 var classifierTrainingFile = __dirname + '/classifier_training.csv';
 
 var dialogService = watson.dialog({

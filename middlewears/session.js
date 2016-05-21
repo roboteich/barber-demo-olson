@@ -12,12 +12,13 @@ db.keys('sess:*', function(err, replies) {
   if(err) {
     logger.info('[SESSION] couldn\'t find my keys', err);
   }
-
-  db.del(replies, function(err, response) {
-    if(err) {
-      logger.info('[SESSION] couldn\'t find my keys', err);
-    }
-  });
+  if(replies && replies.length){
+    db.del(replies, function(err, response) {
+      if(err) {
+        logger.info('[SESSION] couldn\'t find my keys', err);
+      }
+    });
+  }
 });
 
 
